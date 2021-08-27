@@ -42,18 +42,18 @@ func main() {
 		colly.Async(true),
 		colly.IgnoreRobotsTxt(),
 	)
-	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 500})
+	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 250})
 	c.WithTransport(&http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   5 * time.Second,
-			KeepAlive: 5 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		MaxIdleConns:          500,
+		Proxy:                 http.ProxyFromEnvironment,
+		MaxIdleConns:          100,
 		IdleConnTimeout:       5 * time.Second,
 		TLSHandshakeTimeout:   5 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
+
+		DialContext: (&net.Dialer{
+			Timeout:  5 * time.Second,
+			Deadline: time.Now().Add(20 * time.Second),
+		}).DialContext,
 	})
 
 	// Create Results Channel
